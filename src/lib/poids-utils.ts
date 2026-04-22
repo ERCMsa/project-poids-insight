@@ -5,6 +5,7 @@ import {
   startOfMonth,
   startOfYear,
   isAfter,
+  isBefore,
   format,
 } from "date-fns";
 
@@ -29,6 +30,19 @@ export function periodStart(period: Period): Date {
 export function filterByPeriod(entries: PoidsEntry[], period: Period) {
   const start = periodStart(period);
   return entries.filter((e) => isAfter(new Date(e.date), start) || +new Date(e.date) === +start);
+}
+
+export function filterByDateRange(entries: PoidsEntry[], from?: Date, to?: Date) {
+  return entries.filter((e) => {
+    const d = new Date(e.date);
+    if (from && isBefore(d, startOfDay(from))) return false;
+    if (to) {
+      const end = new Date(to);
+      end.setHours(23, 59, 59, 999);
+      if (isAfter(d, end)) return false;
+    }
+    return true;
+  });
 }
 
 export function sumPoids(entries: PoidsEntry[]) {
