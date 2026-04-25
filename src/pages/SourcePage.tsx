@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { Source, SOURCE_COLORS, SOURCE_LABELS } from "@/lib/api";
 import { useSourcePoids } from "@/hooks/usePoidsData";
-import { filterByPeriod, sumPoids, groupByProject, groupByDay, formatPoids, exportToCSV, Period } from "@/lib/poids-utils";
+import { filterBySelection, sumPoids, groupByProject, groupByDay, groupByMonth, formatPoids, exportToCSV, extractYears } from "@/lib/poids-utils";
 import { KpiCard } from "@/components/KpiCard";
 import { ChartCard } from "@/components/ChartCard";
 import { PoidsLineChart } from "@/components/PoidsLineChart";
 import { PoidsBarChart } from "@/components/PoidsBarChart";
-import { PeriodFilter } from "@/components/PeriodFilter";
+import { DateSelector, DateSelection, formatSelectionLabel } from "@/components/DateSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, AlertCircle, Download, Search, Package, TrendingUp, Hash, AlertTriangle } from "lucide-react";
@@ -17,9 +17,15 @@ type Props = { source: Source };
 
 const SourcePage = ({ source }: Props) => {
   const { data, isLoading, error } = useSourcePoids(source);
-  const [period, setPeriod] = useState<Period>("month");
+  const [selection, setSelection] = useState<DateSelection>({
+    granularity: "month",
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+  });
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+
+  const availableYears = useMemo(() => (data ? extractYears(data) : []), [data]);
 
   const projectsList = useMemo(() => {
     if (!data) return [];
@@ -29,21 +35,24 @@ const SourcePage = ({ source }: Props) => {
 
   const filtered = useMemo(() => {
     if (!data) return [];
-    let res = filterByPeriod(data, period);
+    let res = filterBySelection(data, selection);
     if (selectedProject) res = res.filter((d) => d.project === selectedProject);
     return res;
-  }, [data, period, selectedProject]);
+  }, [data, selection, selectedProject]);
 
   const total = sumPoids(filtered);
   const entries = filtered.length;
   const avg = entries ? total / entries : 0;
+  const selectionLabel = formatSelectionLabel(selection);
 
   // anomaly detection: spikes > 2x average
   const anomalies = filtered.filter((e) => avg > 0 && e.totalPoids > avg * 2.5).length;
 
   const chartData = useMemo(() => {
-    return groupByDay(filtered).map((d) => ({ date: d.date, total: d.total }));
-  }, [filtered]);
+    // for year view, show monthly bars; otherwise daily
+    if (selection.granularity === "year") return groupByMonth(filtered);
+    return groupByDay(filtered);
+  }, [filtered, selection.granularity]);
 
   const tableRows = useMemo(
     () => [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
@@ -52,7 +61,7 @@ const SourcePage = ({ source }: Props) => {
 
   const handleExport = () => {
     exportToCSV(
-      `${source}-${period}-${selectedProject || "all"}.csv`,
+      `${source}-${selectionLabel.replace(/\//g, "-")}-${selectedProject || "all"}.csv`,
       tableRows.map((r) => ({
         project: r.project,
         date: r.date,
