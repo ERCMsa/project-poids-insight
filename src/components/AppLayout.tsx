@@ -33,7 +33,6 @@ export const AppLayout = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.end}
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-base",
@@ -59,7 +58,7 @@ export const AppLayout = () => {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.end}
+              
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-base",
