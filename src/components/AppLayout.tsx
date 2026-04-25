@@ -1,11 +1,10 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { LayoutDashboard, Factory, Truck, Wrench, BarChart3, Moon, Sun, Scale } from "lucide-react";
+import { Factory, Truck, Wrench, BarChart3, Moon, Sun, Scale } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/fabrication", label: "Fabrication", icon: Factory },
   { to: "/sortie", label: "Sortie", icon: Truck },
   { to: "/montage", label: "Montage", icon: Wrench },
@@ -34,7 +33,6 @@ export const AppLayout = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end={item.end}
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-base",
@@ -60,7 +58,7 @@ export const AppLayout = () => {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.end}
+              
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-base",

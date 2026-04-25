@@ -32,6 +32,37 @@ export function filterByPeriod(entries: PoidsEntry[], period: Period) {
   return entries.filter((e) => isAfter(new Date(e.date), start) || +new Date(e.date) === +start);
 }
 
+export type DateSelection = {
+  granularity: "day" | "month" | "year" | "all";
+  year?: number;
+  month?: number;
+  day?: number;
+};
+
+export function filterBySelection(entries: PoidsEntry[], sel: DateSelection) {
+  if (sel.granularity === "all") return entries;
+  return entries.filter((e) => {
+    const d = new Date(e.date);
+    if (sel.year !== undefined && d.getFullYear() !== sel.year) return false;
+    if ((sel.granularity === "month" || sel.granularity === "day") && sel.month !== undefined) {
+      if (d.getMonth() + 1 !== sel.month) return false;
+    }
+    if (sel.granularity === "day" && sel.day !== undefined) {
+      if (d.getDate() !== sel.day) return false;
+    }
+    return true;
+  });
+}
+
+export function extractYears(entries: PoidsEntry[]): number[] {
+  const set = new Set<number>();
+  for (const e of entries) {
+    const y = new Date(e.date).getFullYear();
+    if (!isNaN(y)) set.add(y);
+  }
+  return Array.from(set).sort((a, b) => b - a);
+}
+
 export function filterByDateRange(entries: PoidsEntry[], from?: Date, to?: Date) {
   return entries.filter((e) => {
     const d = new Date(e.date);

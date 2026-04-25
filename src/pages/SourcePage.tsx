@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { Source, SOURCE_COLORS, SOURCE_LABELS } from "@/lib/api";
 import { useSourcePoids } from "@/hooks/usePoidsData";
-import { filterByPeriod, sumPoids, groupByProject, groupByDay, formatPoids, exportToCSV, Period } from "@/lib/poids-utils";
+import { filterBySelection, sumPoids, groupByProject, groupByDay, groupByMonth, formatPoids, exportToCSV, extractYears } from "@/lib/poids-utils";
 import { KpiCard } from "@/components/KpiCard";
 import { ChartCard } from "@/components/ChartCard";
 import { PoidsLineChart } from "@/components/PoidsLineChart";
 import { PoidsBarChart } from "@/components/PoidsBarChart";
-import { PeriodFilter } from "@/components/PeriodFilter";
+import { DateSelector, DateSelection, formatSelectionLabel } from "@/components/DateSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, AlertCircle, Download, Search, Package, TrendingUp, Hash, AlertTriangle } from "lucide-react";
@@ -17,9 +17,15 @@ type Props = { source: Source };
 
 const SourcePage = ({ source }: Props) => {
   const { data, isLoading, error } = useSourcePoids(source);
-  const [period, setPeriod] = useState<Period>("month");
+  const [selection, setSelection] = useState<DateSelection>({
+    granularity: "month",
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+  });
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+
+  const availableYears = useMemo(() => (data ? extractYears(data) : []), [data]);
 
   const projectsList = useMemo(() => {
     if (!data) return [];
@@ -29,21 +35,24 @@ const SourcePage = ({ source }: Props) => {
 
   const filtered = useMemo(() => {
     if (!data) return [];
-    let res = filterByPeriod(data, period);
+    let res = filterBySelection(data, selection);
     if (selectedProject) res = res.filter((d) => d.project === selectedProject);
     return res;
-  }, [data, period, selectedProject]);
+  }, [data, selection, selectedProject]);
 
   const total = sumPoids(filtered);
   const entries = filtered.length;
   const avg = entries ? total / entries : 0;
+  const selectionLabel = formatSelectionLabel(selection);
 
   // anomaly detection: spikes > 2x average
   const anomalies = filtered.filter((e) => avg > 0 && e.totalPoids > avg * 2.5).length;
 
   const chartData = useMemo(() => {
-    return groupByDay(filtered).map((d) => ({ date: d.date, total: d.total }));
-  }, [filtered]);
+    // for year view, show monthly bars; otherwise daily
+    if (selection.granularity === "year") return groupByMonth(filtered);
+    return groupByDay(filtered);
+  }, [filtered, selection.granularity]);
 
   const tableRows = useMemo(
     () => [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
@@ -52,7 +61,7 @@ const SourcePage = ({ source }: Props) => {
 
   const handleExport = () => {
     exportToCSV(
-      `${source}-${period}-${selectedProject || "all"}.csv`,
+      `${source}-${selectionLabel.replace(/\//g, "-")}-${selectedProject || "all"}.csv`,
       tableRows.map((r) => ({
         project: r.project,
         date: r.date,
@@ -94,16 +103,16 @@ const SourcePage = ({ source }: Props) => {
             {selectedProject ? `Project: ${selectedProject}` : "All projects"}
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <PeriodFilter value={period} onChange={setPeriod} />
-          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+        <div className="flex items-end gap-2 flex-wrap">
+          <DateSelector value={selection} onChange={setSelection} availableYears={availableYears} />
+          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 h-9">
             <Download className="h-3.5 w-3.5" /> Export
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <KpiCard label={`Total · ${period}`} value={total} icon={Package} variant="primary" />
+        <KpiCard label={`Total · ${selectionLabel}`} value={total} icon={Package} variant="primary" />
         <KpiCard label="Entries" value={entries} icon={Hash} variant="accent" suffix="" />
         <KpiCard label="Average" value={avg} icon={TrendingUp} variant="success" />
         <KpiCard label="Anomalies" value={anomalies} icon={AlertTriangle} variant="warning" suffix="" />
@@ -162,7 +171,7 @@ const SourcePage = ({ source }: Props) => {
 
         {/* Right column */}
         <div className="space-y-6">
-          <ChartCard title="Poids over time" description={`Daily totals for ${period}`}>
+          <ChartCard title="Poids over time" description={`${selection.granularity === "year" ? "Monthly" : "Daily"} totals · ${selectionLabel}`}>
             {chartData.length > 0 ? (
               chartData.length > 14 ? (
                 <PoidsLineChart
