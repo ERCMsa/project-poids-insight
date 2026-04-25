@@ -1,11 +1,10 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { LayoutDashboard, Factory, Truck, Wrench, BarChart3, Moon, Sun, Scale } from "lucide-react";
+import { Factory, Truck, Wrench, BarChart3, Moon, Sun, Scale } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/fabrication", label: "Fabrication", icon: Factory },
   { to: "/sortie", label: "Sortie", icon: Truck },
   { to: "/montage", label: "Montage", icon: Wrench },
