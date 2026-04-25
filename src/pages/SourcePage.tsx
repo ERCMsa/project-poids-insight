@@ -198,7 +198,6 @@ const SourcePage = ({ source }: Props) => {
                 </thead>
                 <tbody>
                   {tableRows.slice(0, 50).map((r, i) => {
-                    const isAnomaly = avg > 0 && r.totalPoids > avg * 2.5;
                     return (
                       <tr key={i} className="border-b border-border/30 hover:bg-secondary/40 transition-base">
                         <td className="py-2.5 px-2 text-xs text-muted-foreground tabular-nums whitespace-nowrap">
@@ -212,10 +211,7 @@ const SourcePage = ({ source }: Props) => {
                         </td>
                         <td className="py-2.5 px-2 truncate max-w-[240px]">{r.project}</td>
                         <td className="py-2.5 px-2 text-right tabular-nums font-semibold">
-                          <span className={cn("inline-flex items-center gap-1.5", isAnomaly && "text-warning")}>
-                            {isAnomaly && <AlertTriangle className="h-3 w-3" />}
-                            {formatPoids(r.totalPoids)}
-                          </span>
+                          {formatPoids(r.totalPoids)}
                         </td>
                       </tr>
                     );
