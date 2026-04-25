@@ -1,13 +1,6 @@
 import { useMemo } from "react";
 import { PoidsEntry, Source, SOURCE_COLORS, SOURCE_LABELS } from "@/lib/api";
-import {
-  Period,
-  filterByPeriod,
-  sumPoids,
-  groupByProject,
-  groupByMonth,
-  formatPoids,
-} from "@/lib/poids-utils";
+import { sumPoids, groupByProject, groupByMonth, groupByDay, formatPoids } from "@/lib/poids-utils";
 import { ChartCard } from "@/components/ChartCard";
 import { PoidsBarChart } from "@/components/PoidsBarChart";
 import { Trophy } from "lucide-react";
@@ -15,14 +8,18 @@ import { Trophy } from "lucide-react";
 type Props = {
   source: Source;
   entries: PoidsEntry[];
-  period: Period;
+  label: string;
 };
 
-export const SourceStatsBlock = ({ source, entries, period }: Props) => {
-  const filtered = useMemo(() => filterByPeriod(entries, period), [entries, period]);
-  const total = useMemo(() => sumPoids(filtered), [filtered]);
-  const monthly = useMemo(() => groupByMonth(filtered), [filtered]);
-  const ranking = useMemo(() => groupByProject(filtered).slice(0, 5), [filtered]);
+export const SourceStatsBlock = ({ source, entries, label }: Props) => {
+  const total = useMemo(() => sumPoids(entries), [entries]);
+  // Use day grouping when range is short, otherwise monthly
+  const trend = useMemo(() => {
+    const monthly = groupByMonth(entries);
+    if (monthly.length <= 1) return groupByDay(entries);
+    return monthly;
+  }, [entries]);
+  const ranking = useMemo(() => groupByProject(entries).slice(0, 5), [entries]);
   const color = SOURCE_COLORS[source];
 
   return (
@@ -40,10 +37,10 @@ export const SourceStatsBlock = ({ source, entries, period }: Props) => {
         </div>
       </div>
 
-      <ChartCard title="Monthly trend" description={`${SOURCE_LABELS[source]} · ${period}`}>
-        {monthly.length > 0 ? (
+      <ChartCard title="Trend" description={`${SOURCE_LABELS[source]} · ${label}`}>
+        {trend.length > 0 ? (
           <PoidsBarChart
-            data={monthly}
+            data={trend}
             series={[{ key: "total", label: SOURCE_LABELS[source], color }]}
             height={200}
           />
