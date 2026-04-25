@@ -1,17 +1,25 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAllPoids } from "@/hooks/usePoidsData";
-import { Period } from "@/lib/poids-utils";
+import { extractYears, filterBySelection } from "@/lib/poids-utils";
 import { Source } from "@/lib/api";
-import { PeriodFilter } from "@/components/PeriodFilter";
+import { DateSelector, DateSelection, formatSelectionLabel } from "@/components/DateSelector";
 import { SourceStatsBlock } from "@/components/SourceStatsBlock";
 import { ReportDialog } from "@/components/ReportDialog";
 import { Loader2, AlertCircle } from "lucide-react";
 
 const Statistics = () => {
   const { data, isLoading, error } = useAllPoids();
-  const [period, setPeriod] = useState<Period>("year");
+  const [selection, setSelection] = useState<DateSelection>({
+    granularity: "year",
+    year: new Date().getFullYear(),
+  });
 
   const sources: Source[] = ["fabrication", "sortie", "montage"];
+
+  const availableYears = useMemo(() => {
+    if (!data) return [];
+    return extractYears([...data.fabrication, ...data.sortie, ...data.montage]);
+  }, [data]);
 
   if (isLoading) {
     return (
@@ -33,22 +41,28 @@ const Statistics = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Statistics</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Each step shown side-by-side · generate a downloadable PDF report
+            Each step shown side-by-side · viewing{" "}
+            <span className="font-medium text-foreground">{formatSelectionLabel(selection)}</span>
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <PeriodFilter value={period} onChange={setPeriod} />
+        <div className="flex items-end gap-3 flex-wrap">
+          <DateSelector value={selection} onChange={setSelection} availableYears={availableYears} />
           <ReportDialog data={data} />
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         {sources.map((s) => (
-          <SourceStatsBlock key={s} source={s} entries={data[s]} period={period} />
+          <SourceStatsBlock
+            key={s}
+            source={s}
+            entries={filterBySelection(data[s], selection)}
+            label={formatSelectionLabel(selection)}
+          />
         ))}
       </div>
     </div>
