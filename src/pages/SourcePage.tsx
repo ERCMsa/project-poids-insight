@@ -103,16 +103,16 @@ const SourcePage = ({ source }: Props) => {
             {selectedProject ? `Project: ${selectedProject}` : "All projects"}
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <PeriodFilter value={period} onChange={setPeriod} />
-          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+        <div className="flex items-end gap-2 flex-wrap">
+          <DateSelector value={selection} onChange={setSelection} availableYears={availableYears} />
+          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 h-9">
             <Download className="h-3.5 w-3.5" /> Export
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <KpiCard label={`Total · ${period}`} value={total} icon={Package} variant="primary" />
+        <KpiCard label={`Total · ${selectionLabel}`} value={total} icon={Package} variant="primary" />
         <KpiCard label="Entries" value={entries} icon={Hash} variant="accent" suffix="" />
         <KpiCard label="Average" value={avg} icon={TrendingUp} variant="success" />
         <KpiCard label="Anomalies" value={anomalies} icon={AlertTriangle} variant="warning" suffix="" />
@@ -171,7 +171,7 @@ const SourcePage = ({ source }: Props) => {
 
         {/* Right column */}
         <div className="space-y-6">
-          <ChartCard title="Poids over time" description={`Daily totals for ${period}`}>
+          <ChartCard title="Poids over time" description={`${selection.granularity === "year" ? "Monthly" : "Daily"} totals · ${selectionLabel}`}>
             {chartData.length > 0 ? (
               chartData.length > 14 ? (
                 <PoidsLineChart
