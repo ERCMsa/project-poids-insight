@@ -9,7 +9,7 @@ import { PoidsBarChart } from "@/components/PoidsBarChart";
 import { DateSelector, DateSelection, formatSelectionLabel } from "@/components/DateSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, AlertCircle, Download, Search, Package, TrendingUp, Hash, AlertTriangle } from "lucide-react";
+import { Loader2, AlertCircle, Download, Search, Package, TrendingUp, Hash } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -42,11 +42,9 @@ const SourcePage = ({ source }: Props) => {
 
   const total = sumPoids(filtered);
   const entries = filtered.length;
-  const avg = entries ? total / entries : 0;
+  // Average based on 22 working days per month
+  const avg = total / 22;
   const selectionLabel = formatSelectionLabel(selection);
-
-  // anomaly detection: spikes > 2x average
-  const anomalies = filtered.filter((e) => avg > 0 && e.totalPoids > avg * 2.5).length;
 
   const chartData = useMemo(() => {
     // for year view, show monthly bars; otherwise daily
@@ -111,11 +109,10 @@ const SourcePage = ({ source }: Props) => {
         </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
         <KpiCard label={`Total · ${selectionLabel}`} value={total} icon={Package} variant="primary" />
         <KpiCard label="Entries" value={entries} icon={Hash} variant="accent" suffix="" />
-        <KpiCard label="Average" value={avg} icon={TrendingUp} variant="success" />
-        <KpiCard label="Anomalies" value={anomalies} icon={AlertTriangle} variant="warning" suffix="" />
+        <KpiCard label="Average / day (22j)" value={avg} icon={TrendingUp} variant="success" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
