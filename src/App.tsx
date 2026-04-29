@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/AppLayout";
 import SourcePage from "./pages/SourcePage";
 import Statistics from "./pages/Statistics";
+import AIAnalysis from "./pages/AIAnalysis";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient({
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/sortie" element={<SourcePage source="sortie" />} />
             <Route path="/montage" element={<SourcePage source="montage" />} />
             <Route path="/statistics" element={<Statistics />} />
+            <Route path="/ai-analysis" element={<AIAnalysis />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
