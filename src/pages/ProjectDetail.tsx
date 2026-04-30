@@ -158,8 +158,8 @@ const ProjectDetail = () => {
       </div>
 
       <ChartCard
-        title="Stages comparison"
-        description={`Fabrication vs Sortie vs Montage · ${formatSelectionLabel(selection)}`}
+        title="Daily stages"
+        description={`Daily Fabrication · Sortie · Montage · ${formatSelectionLabel(selection)}`}
       >
         {combined.length > 0 ? (
           <PoidsBarChart
