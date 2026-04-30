@@ -11,7 +11,6 @@ type ProjectRow = {
   fabrication: number;
   sortie: number;
   montage: number;
-  total: number;
 };
 
 const Projects = () => {
@@ -28,15 +27,18 @@ const Projects = () => {
           fabrication: 0,
           sortie: 0,
           montage: 0,
-          total: 0,
         };
         r[source] += e.totalPoids || 0;
-        r.total += e.totalPoids || 0;
         map.set(e.project, r);
       }
     };
     (["fabrication", "sortie", "montage"] as Source[]).forEach(accumulate);
-    return Array.from(map.values()).sort((a, b) => b.total - a.total);
+    // Sort by the largest single-stage value (no cross-stage summing — stages are pipeline steps)
+    return Array.from(map.values()).sort(
+      (a, b) =>
+        Math.max(b.fabrication, b.sortie, b.montage) -
+        Math.max(a.fabrication, a.sortie, a.montage),
+    );
   }, [data]);
 
   const filtered = useMemo(() => {
@@ -101,9 +103,7 @@ const Projects = () => {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold truncate">{r.project}</p>
-                    <p className="text-xs text-muted-foreground tabular-nums">
-                      {formatPoids(r.total)} kg total
-                    </p>
+                    <p className="text-xs text-muted-foreground">3 pipeline steps</p>
                   </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform shrink-0" />
