@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Factory, Truck, Wrench, BarChart3, Moon, Sun, Scale, Brain } from "lucide-react";
+import { Factory, Truck, Wrench, BarChart3, Moon, Sun, Scale, Brain, FolderKanban } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ const navItems = [
   { to: "/sortie", label: "Sortie", icon: Truck },
   { to: "/montage", label: "Montage", icon: Wrench },
   { to: "/statistics", label: "Statistics", icon: BarChart3 },
+  { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/ai-analysis", label: "AI Analysis", icon: Brain },
 ];
 
