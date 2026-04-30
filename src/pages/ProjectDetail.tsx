@@ -7,7 +7,6 @@ import {
   filterBySelection,
   sumPoids,
   groupByDay,
-  groupByMonth,
   formatPoids,
 } from "@/lib/poids-utils";
 import { DateSelector, DateSelection, formatSelectionLabel } from "@/components/DateSelector";
