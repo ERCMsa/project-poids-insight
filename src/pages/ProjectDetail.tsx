@@ -31,7 +31,6 @@ import {
   Factory,
   Truck,
   Wrench,
-  Scale,
 } from "lucide-react";
 
 const ProjectDetail = () => {
