@@ -11,7 +11,7 @@ import {
 } from "@/lib/poids-utils";
 import { DateSelector, DateSelection, formatSelectionLabel } from "@/components/DateSelector";
 import { ChartCard } from "@/components/ChartCard";
-import { PoidsBarChart } from "@/components/PoidsBarChart";
+import { PoidsLineChart } from "@/components/PoidsLineChart";
 import { KpiCard } from "@/components/KpiCard";
 import {
   Table,
@@ -162,7 +162,7 @@ const ProjectDetail = () => {
         description={`Daily Fabrication · Sortie · Montage · ${formatSelectionLabel(selection)}`}
       >
         {combined.length > 0 ? (
-          <PoidsBarChart
+          <PoidsLineChart
             data={combined as Array<Record<string, string | number>>}
             series={sources.map((s) => ({
               key: s,
