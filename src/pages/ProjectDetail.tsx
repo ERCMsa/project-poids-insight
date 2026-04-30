@@ -31,7 +31,6 @@ import {
   Factory,
   Truck,
   Wrench,
-  Scale,
 } from "lucide-react";
 
 const ProjectDetail = () => {
@@ -86,7 +85,6 @@ const ProjectDetail = () => {
     sortie: sumPoids(projectData.sortie),
     montage: sumPoids(projectData.montage),
   };
-  const grandTotal = totals.fabrication + totals.sortie + totals.montage;
 
   const icons = { fabrication: Factory, sortie: Truck, montage: Wrench };
   const variants: Record<Source, "primary" | "accent" | "success"> = {
@@ -153,8 +151,7 @@ const ProjectDetail = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Total" value={grandTotal} icon={Scale} variant="primary" />
+      <div className="grid gap-4 sm:grid-cols-3">
         {sources.map((s) => (
           <KpiCard
             key={s}
