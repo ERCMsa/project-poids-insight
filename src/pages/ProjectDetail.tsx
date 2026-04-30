@@ -7,7 +7,6 @@ import {
   filterBySelection,
   sumPoids,
   groupByDay,
-  groupByMonth,
   formatPoids,
 } from "@/lib/poids-utils";
 import { DateSelector, DateSelection, formatSelectionLabel } from "@/components/DateSelector";
@@ -93,16 +92,11 @@ const ProjectDetail = () => {
     montage: "success",
   };
 
-  // Combined trend chart: monthly if range > 1 month else daily
+  // Daily trend chart per stage (no monthly aggregation)
   const combined = useMemo(() => {
     const buckets: Record<string, Record<string, number | string>> = {};
-    const useMonth = (() => {
-      const all = [...projectData.fabrication, ...projectData.sortie, ...projectData.montage];
-      const monthsSet = new Set(all.map((e) => format(new Date(e.date), "yyyy-MM")));
-      return monthsSet.size > 1;
-    })();
     for (const s of sources) {
-      const grouped = useMonth ? groupByMonth(projectData[s]) : groupByDay(projectData[s]);
+      const grouped = groupByDay(projectData[s]);
       for (const g of grouped) {
         if (!buckets[g.date]) buckets[g.date] = { date: g.date };
         buckets[g.date][s] = g.total;
@@ -164,8 +158,8 @@ const ProjectDetail = () => {
       </div>
 
       <ChartCard
-        title="Stages comparison"
-        description={`Fabrication vs Sortie vs Montage · ${formatSelectionLabel(selection)}`}
+        title="Daily stages"
+        description={`Daily Fabrication · Sortie · Montage · ${formatSelectionLabel(selection)}`}
       >
         {combined.length > 0 ? (
           <PoidsBarChart
