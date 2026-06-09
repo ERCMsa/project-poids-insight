@@ -99,7 +99,7 @@ export const ReportDialog = ({ data }: Props) => {
         <DialogHeader>
           <DialogTitle>Generate statistics PDF</DialogTitle>
           <DialogDescription>
-            Choose a date range and a project. The report keeps Fabrication, Sortie and Montage as
+            Choose a date range and a project. The report keeps Fabrication, Expédition and Montage as
             separate steps.
           </DialogDescription>
         </DialogHeader>

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/fabrication", label: "Fabrication", icon: Factory },
-  { to: "/sortie", label: "Sortie", icon: Truck },
+  { to: "/sortie", label: "Expédition", icon: Truck },
   { to: "/montage", label: "Montage", icon: Wrench },
   { to: "/statistics", label: "Statistics", icon: BarChart3 },
   { to: "/projects", label: "Projects", icon: FolderKanban },

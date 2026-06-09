@@ -159,7 +159,7 @@ const ProjectDetail = () => {
 
       <ChartCard
         title="Daily stages"
-        description={`Daily Fabrication · Sortie · Montage · ${formatSelectionLabel(selection)}`}
+        description={`Daily Fabrication · Expédition · Montage · ${formatSelectionLabel(selection)}`}
       >
         {combined.length > 0 ? (
           <PoidsLineChart

@@ -36,7 +36,7 @@ export async function fetchAll(): Promise<Record<Source, PoidsEntry[]>> {
 
 export const SOURCE_LABELS: Record<Source, string> = {
   fabrication: "Fabrication",
-  sortie: "Sortie",
+  sortie: "Expédition",
   montage: "Montage",
 };
 
