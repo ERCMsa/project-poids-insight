@@ -54,6 +54,7 @@ function generatePDF(responsable: string, records: MontageRecord[], color: [numb
   const today = new Date();
   const todayStr = today.toDateString();
 
+  const fmt = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   const total = records.reduce((a, r) => a + (r.totalPoids || 0), 0);
   const todayTotal = records
     .filter((r) => new Date(r.date).toDateString() === todayStr)
@@ -78,9 +79,9 @@ function generatePDF(responsable: string, records: MontageRecord[], color: [numb
   y += 8;
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`Total poids cumulé : ${formatPoids(total)} kg`, margin, y);
+  doc.text(`Total poids cumulé : ${fmt(total)} kg`, margin, y);
   y += 5;
-  doc.text(`Poids monté aujourd'hui : ${formatPoids(todayTotal)} kg`, margin, y);
+  doc.text(`Poids monté aujourd'hui : ${fmt(todayTotal)} kg`, margin, y);
   y += 5;
   doc.text(`Nombre d'entrées : ${records.length}`, margin, y);
   y += 8;
@@ -95,7 +96,7 @@ function generatePDF(responsable: string, records: MontageRecord[], color: [numb
     body: sorted.map((r) => [
       format(new Date(r.date), "dd/MM/yyyy"),
       r.project,
-      formatPoids(r.totalPoids),
+      fmt(r.totalPoids),
     ]),
     styles: { fontSize: 9, cellPadding: 2 },
     headStyles: { fillColor: color, textColor: 255 },
