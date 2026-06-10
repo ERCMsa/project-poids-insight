@@ -81,7 +81,8 @@ function generatePDF(responsable: string, records: MontageRecord[], color: [numb
   doc.setFont("helvetica", "normal");
   doc.text(`Total poids cumulé : ${fmt(total)} kg`, margin, y);
   y += 5;
-  doc.text(`Poids monté aujourd'hui : ${fmt(todayTotal)} kg`, margin, y);
+  const avg = records.length > 0 ? total / records.length : 0;
+  doc.text(`Moyenne de montage par entrée : ${fmt(avg)} kg`, margin, y);
   y += 5;
   doc.text(`Nombre d'entrées : ${records.length}`, margin, y);
   y += 8;
