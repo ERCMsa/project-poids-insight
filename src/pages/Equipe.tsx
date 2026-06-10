@@ -54,6 +54,7 @@ function generatePDF(responsable: string, records: MontageRecord[], color: [numb
   const today = new Date();
   const todayStr = today.toDateString();
 
+  const fmt = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   const total = records.reduce((a, r) => a + (r.totalPoids || 0), 0);
   const todayTotal = records
     .filter((r) => new Date(r.date).toDateString() === todayStr)
