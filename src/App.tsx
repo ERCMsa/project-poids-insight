@@ -9,6 +9,7 @@ import Statistics from "./pages/Statistics";
 import AIAnalysis from "./pages/AIAnalysis";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
+import Equipe from "./pages/Equipe";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient({
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/statistics" element={<Statistics />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:project" element={<ProjectDetail />} />
+            <Route path="/equipe" element={<Equipe />} />
             <Route path="/ai-analysis" element={<AIAnalysis />} />
           </Route>
           <Route path="*" element={<NotFound />} />
